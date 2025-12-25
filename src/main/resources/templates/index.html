@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотечная система</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h1 {
+            color: #2c5282;
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .main-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .nav-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            text-decoration: none;
+            color: #2d3748;
+            transition: all 0.3s ease;
+        }
+
+        .nav-card:hover {
+            border-color: #4299e1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+        }
+
+        .nav-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #4299e1;
+        }
+
+        .nav-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .nav-desc {
+            color: #718096;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        /* Стили для сообщений */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-success {
+            background-color: #c6f6d5;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #c53030;
+            border: 1px solid #fc8181;
+        }
+
+        .alert-warning {
+            background-color: #feebc8;
+            color: #c05621;
+            border: 1px solid #fbd38d;
+        }
+
+        .alert-info {
+            background-color: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
+
+        .alert-dismissible {
+            padding-right: 45px;
+        }
+
+        .alert-dismissible .btn-close {
+            position: relative;
+            top: -5px;
+            right: -25px;
+            color: inherit;
+            background: transparent;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">×</button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">×</button>
+    </div>
+
+    <header>
+        <h1> Библиотечная система</h1>
+        <p class="subtitle">Управление библиотечным фондом и читателями</p>
+    </header>
+
+    <div class="main-nav">
+        <a th:href="@{/books}" class="nav-card">
+            <div class="nav-icon"></div>
+            <div class="nav-title">Книги</div>
+            <div class="nav-desc">Управление книжным фондом библиотеки с проверкой уникальности инвентарных номеров</div>
+        </a>
+
+        <a th:href="@{/readers}" class="nav-card">
+            <div class="nav-icon"></div>
+            <div class="nav-title">Читатели</div>
+            <div class="nav-desc">Учет читателей и их данных с проверкой уникальности номеров билетов</div>
+        </a>
+
+        <a th:href="@{/librarians}" class="nav-card">
+            <div class="nav-icon"></div>
+            <div class="nav-title">Библиотекари</div>
+            <div class="nav-desc">Управление персоналом библиотеки с проверкой уникальности табельных номеров</div>
+        </a>
+
+        <a th:href="@{/loans}" class="nav-card">
+            <div class="nav-icon"></div>
+            <div class="nav-title">Выдачи</div>
+            <div class="nav-desc">Учет выдачи и возврата книг с контролем доступности и сроков</div>
+        </a>
+    </div>
+
+    <div class="footer">
+        Система управления библиотекой © 2025
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 500);
+            }, 5000);
+        });
+
+        document.querySelectorAll('.btn-close').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const alert = this.closest('.alert');
+                if (alert) {
+                    alert.style.transition = 'opacity 0.3s';
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 300);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

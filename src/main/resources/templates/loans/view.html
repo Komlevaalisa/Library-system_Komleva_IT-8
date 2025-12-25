@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр выдачи книги</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .loan-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .loan-header h1 {
+            color: #2c5282;
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+
+        .loan-header p {
+            color: #718096;
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        .loan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .detail-card {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .detail-card h3 {
+            color: #2c5282;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .status-info {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #38a169;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .status-active {
+            background-color: #bee3f8;
+            color: #2c5282;
+        }
+
+        .status-overdue {
+            background-color: #fed7d7;
+            color: #c53030;
+        }
+
+        .status-returned {
+            background-color: #c6f6d5;
+            color: #276749;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3182ce;
+        }
+
+        .btn-secondary {
+            background-color: #a0aec0;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #718096;
+        }
+
+        .btn-success {
+            background-color: #38a169;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #2f855a;
+        }
+
+        .btn-danger {
+            background-color: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e53e3e;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .status-warning {
+            border-left-color: #e53e3e;
+            background-color: #fed7d7;
+        }
+
+        .status-info-card {
+            border-left-color: #4299e1;
+            background-color: #bee3f8;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-success {
+            background-color: #c6f6d5;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #c53030;
+            border: 1px solid #fc8181;
+        }
+
+        .alert-dismissible .btn-close {
+            position: relative;
+            top: -5px;
+            right: -25px;
+            color: inherit;
+            background: transparent;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .loan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">×</button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">×</button>
+    </div>
+
+    <div class="loan-header">
+        <h1>Просмотр выдачи книги</h1>
+        <p>Детальная информация о выдаче книги читателю</p>
+    </div>
+
+    <div class="status-info" th:classappend="${!canDelete} ? 'status-warning' : 'status-info-card'">
+        <div>
+            <span th:if="${loan.returnDate}" class="status-badge status-returned">КНИГА ВОЗВРАЩЕНА</span>
+            <span th:unless="${loan.returnDate}">
+                <span th:if="${loan.dueDate != null and loan.dueDate.isBefore(today)}" class="status-badge status-overdue">
+                    ПРОСРОЧЕНА
+                </span>
+                <span th:if="${loan.dueDate != null and !loan.dueDate.isBefore(today)}" class="status-badge status-active">
+                    АКТИВНАЯ ВЫДАЧА
+                </span>
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">ID выдачи:</span>
+            <span class="detail-value" th:text="${loan.loanId}"></span>
+        </div>
+
+        <div th:if="${!canDelete}">
+            <p><strong>Внимание!</strong> Эту выдачу нельзя удалить:</p>
+            <p>Сначала верните книгу через кнопку "Отметить возврат"</p>
+        </div>
+
+        <div th:if="${canDelete}">
+            <p>Выдачу можно безопасно удалить:</p>
+            <p>Книга уже возвращена</p>
+        </div>
+    </div>
+
+    <div class="loan-grid">
+        <div class="detail-card">
+            <h3>Информация о книге</h3>
+            <div class="detail-item">
+                <span class="detail-label">Название:</span>
+                <span class="detail-value" th:text="${loan.book?.title}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Автор:</span>
+                <span class="detail-value" th:text="${loan.book?.author}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Инв. номер:</span>
+                <span class="detail-value" th:text="${loan.book?.bookNumber}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Год издания:</span>
+                <span class="detail-value" th:text="${loan.book?.publicationYear}"></span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <h3>Информация о читателе</h3>
+            <div class="detail-item">
+                <span class="detail-label">ФИО:</span>
+                <span class="detail-value" th:text="${loan.reader?.fullName}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Читательский №:</span>
+                <span class="detail-value" th:text="${loan.reader?.ticketNumber}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Телефон:</span>
+                <span class="detail-value" th:text="${loan.reader?.phoneNumber}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Дата регистрации:</span>
+                <span class="detail-value" th:text="${loan.reader?.registrationDate}"></span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <h3>Информация о выдаче</h3>
+            <div class="detail-item">
+                <span class="detail-label">Библиотекарь:</span>
+                <span class="detail-value" th:text="${loan.librarian?.fullName}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Должность:</span>
+                <span class="detail-value" th:text="${loan.librarian?.position}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Дата выдачи:</span>
+                <span class="detail-value" th:text="${loan.loanDate}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Срок возврата:</span>
+                <span class="detail-value" th:text="${loan.dueDate}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Дата возврата:</span>
+                <span class="detail-value">
+                    <span th:if="${loan.returnDate}" th:text="${loan.returnDate}"></span>
+                    <span th:unless="${loan.returnDate}" style="color: #718096;">не возвращена</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a th:href="@{/loans}" class="btn btn-secondary">К списку выдач</a>
+        <a th:href="@{/loans/edit/{id}(id=${loan.loanId})}" class="btn btn-primary">Изменить</a>
+        <a th:unless="${loan.returnDate}"
+           th:href="@{/loans/return/{id}(id=${loan.loanId})}"
+           th:onclick="'return confirm(\'Отметить книгу «' + (${loan.book?.title} ?: 'книгу') + '» как возвращенную?\')'"
+           class="btn btn-success">Отметить возврат</a>
+        <a th:href="@{/loans/delete/{id}(id=${loan.loanId})}"
+           class="btn btn-danger"
+           th:classappend="${!canDelete} ? 'btn-disabled' : ''"
+           th:onclick="${canDelete} ? 'return confirm(\'Вы уверены, что хотите удалить запись о выдаче книги «' + (${loan.book?.title} ?: 'книги') + '»?\')' : 'return false'">
+            Удалить
+        </a>
+    </div>
+
+    <a th:href="@{/}" class="back-link">← На главную</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteBtn = document.querySelector('.btn-danger.btn-disabled');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Невозможно удалить активную выдачу. Сначала верните книгу через кнопку "Отметить возврат".');
+                return false;
+            });
+        }
+
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 500);
+            }, 5000);
+        });
+
+        document.querySelectorAll('.btn-close').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const alert = this.closest('.alert');
+                if (alert) {
+                    alert.style.transition = 'opacity 0.3s';
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 300);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

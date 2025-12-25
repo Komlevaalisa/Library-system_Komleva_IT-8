@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${loan.loanId == null} ? 'Оформить выдачу' : 'Изменить выдачу'">Форма выдачи книги</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-header h1 {
+            color: #2c5282;
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+
+        .form-header p {
+            color: #718096;
+            margin: 0;
+        }
+
+        .form-card {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: #4299e1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        .form-group select.error,
+        .form-group input.error {
+            border-color: #f56565;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3182ce;
+        }
+
+        .btn-secondary {
+            background-color: #a0aec0;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #718096;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .validation-info {
+            background: #feebc8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dd6b20;
+        }
+
+        .validation-info p {
+            margin: 5px 0;
+            color: #c05621;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-header">
+        <h1 th:text="${loan.loanId == null} ? ' Оформить выдачу книги' : ' Изменить выдачу книги'"></h1>
+        <p th:text="${loan.loanId == null} ? 'Заполните информацию о выдаче книги' : 'Измените информацию о выдаче книги'"></p>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">×</button>
+    </div>
+
+    <div class="validation-info">
+        <p><strong>Требования к данным:</strong></p>
+        <p>• Срок возврата не может быть раньше даты выдачи</p>
+        <p>• Книга не может быть выдана, если уже активна у другого читателя</p>
+        <p>• Все поля обязательны для заполнения</p>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{/loans/save}" th:object="${loan}" method="post" id="loanForm">
+            <div class="form-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="book.bookId">Книга *</label>
+                        <select id="book.bookId" th:field="*{book.bookId}"
+                                th:classappend="${#fields.hasErrors('book')} ? 'error' : ''" required>
+                            <option value="">Выберите книгу...</option>
+                            <option th:each="book : ${books}"
+                                    th:value="${book.bookId}"
+                                    th:text="${book.title + ' (' + book.author + ')'}">
+                            </option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('book')}"
+                              class="error-message" th:errors="*{book}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reader.readerId">Читатель *</label>
+                        <select id="reader.readerId" th:field="*{reader.readerId}"
+                                th:classappend="${#fields.hasErrors('reader')} ? 'error' : ''" required>
+                            <option value="">Выберите читателя...</option>
+                            <option th:each="reader : ${readers}"
+                                    th:value="${reader.readerId}"
+                                    th:text="${reader.fullName + ' (№' + reader.ticketNumber + ')'}">
+                            </option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('reader')}"
+                              class="error-message" th:errors="*{reader}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="librarian.librarianId">Библиотекарь *</label>
+                        <select id="librarian.librarianId" th:field="*{librarian.librarianId}"
+                                th:classappend="${#fields.hasErrors('librarian')} ? 'error' : ''" required>
+                            <option value="">Выберите библиотекаря...</option>
+                            <option th:each="librarian : ${librarians}"
+                                    th:value="${librarian.librarianId}"
+                                    th:text="${librarian.fullName + ' (' + librarian.position + ')'}">
+                            </option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('librarian')}"
+                              class="error-message" th:errors="*{librarian}"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-group">
+                        <label for="loanDate">Дата выдачи *</label>
+                        <input type="date" id="loanDate" th:field="*{loanDate}"
+                               th:classappend="${#fields.hasErrors('loanDate')} ? 'error' : ''" required>
+                        <span th:if="${#fields.hasErrors('loanDate')}"
+                              class="error-message" th:errors="*{loanDate}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dueDate">Срок возврата *</label>
+                        <input type="date" id="dueDate" th:field="*{dueDate}"
+                               th:classappend="${#fields.hasErrors('dueDate')} ? 'error' : ''" required>
+                        <span th:if="${#fields.hasErrors('dueDate')}"
+                              class="error-message" th:errors="*{dueDate}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="returnDate">Дата возврата</label>
+                        <input type="date" id="returnDate" th:field="*{returnDate}"
+                               th:classappend="${#fields.hasErrors('returnDate')} ? 'error' : ''">
+                        <span th:if="${#fields.hasErrors('returnDate')}"
+                              class="error-message" th:errors="*{returnDate}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a th:href="@{/loans}" class="btn btn-secondary">Отмена</a>
+                <button type="submit" class="btn btn-primary">
+                    <span th:text="${loan.loanId == null} ? 'Оформить выдачу' : 'Сохранить изменения'"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <a th:href="@{/}" class="back-link">← На главную</a>
+</div>
+
+<script>
+    document.getElementById('loanForm').addEventListener('submit', function(e) {
+        const bookId = document.getElementById('book.bookId').value;
+        const readerId = document.getElementById('reader.readerId').value;
+        const librarianId = document.getElementById('librarian.librarianId').value;
+        const loanDate = document.getElementById('loanDate').value;
+        const dueDate = document.getElementById('dueDate').value;
+        const returnDate = document.getElementById('returnDate').value;
+
+        let errors = [];
+
+        if (!bookId) {
+            errors.push('Книга обязательна');
+        }
+
+        if (!readerId) {
+            errors.push('Читатель обязателен');
+        }
+
+        if (!librarianId) {
+            errors.push('Библиотекарь обязателен');
+        }
+
+        if (!loanDate) {
+            errors.push('Дата выдачи обязательна');
+        }
+
+        if (!dueDate) {
+            errors.push('Срок возврата обязателен');
+        }
+
+        if (loanDate && dueDate) {
+            const loanDateObj = new Date(loanDate);
+            const dueDateObj = new Date(dueDate);
+
+            if (dueDateObj < loanDateObj) {
+                errors.push('Срок возврата не может быть раньше даты выдачи');
+            }
+        }
+
+        if (returnDate && loanDate) {
+            const returnDateObj = new Date(returnDate);
+            const loanDateObj = new Date(loanDate);
+
+            if (returnDateObj < loanDateObj) {
+                errors.push('Дата возврата не может быть раньше даты выдачи');
+            }
+        }
+
+        if (errors.length > 0) {
+            e.preventDefault();
+            alert('Ошибки в форме:\n\n' + errors.join('\n'));
+        }
+    });
+
+    document.getElementById('loanDate').addEventListener('change', function() {
+        const loanDate = this.value;
+        const dueDateInput = document.getElementById('dueDate');
+        const returnDateInput = document.getElementById('returnDate');
+
+        if (loanDate) {
+            dueDateInput.min = loanDate;
+            returnDateInput.min = loanDate;
+
+            if (returnDateInput.value && returnDateInput.value < loanDate) {
+                returnDateInput.value = '';
+            }
+
+            if (!dueDateInput.value || dueDateInput.value < loanDate) {
+                const dueDate = new Date(loanDate);
+                dueDate.setDate(dueDate.getDate() + 14);
+                dueDateInput.value = dueDate.toISOString().split('T')[0];
+            }
+        }
+    });
+</script>
+</body>
+</html>

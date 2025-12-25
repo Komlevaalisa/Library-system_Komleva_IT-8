@@ -1,0 +1,144 @@
+/* Добавляем в конец файла или создаем новый файл */
+
+/* Стили для сообщений */
+.alert {
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.alert-success {
+    background-color: #c6f6d5;
+    color: #276749;
+    border: 1px solid #9ae6b4;
+}
+
+.alert-danger {
+    background-color: #fed7d7;
+    color: #c53030;
+    border: 1px solid #fc8181;
+}
+
+.alert-warning {
+    background-color: #feebc8;
+    color: #c05621;
+    border: 1px solid #fbd38d;
+}
+
+.alert-info {
+    background-color: #bee3f8;
+    color: #2c5282;
+    border: 1px solid #90cdf4;
+}
+
+.alert-dismissible {
+    padding-right: 45px;
+}
+
+.alert-dismissible .btn-close {
+    position: relative;
+    top: -5px;
+    right: -25px;
+    color: inherit;
+    background: transparent;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    opacity: 0.8;
+}
+
+/* Стили для информации о проверке */
+.validation-info {
+    background: #f7fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    border-left: 4px solid #4299e1;
+}
+
+.validation-info h4 {
+    color: #2c5282;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.validation-info ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.validation-info li {
+    margin-bottom: 5px;
+}
+
+/* Стили для отключенных кнопок */
+.btn-disabled {
+    background-color: #a0aec0 !important;
+    color: #718096 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+.btn-disabled:hover {
+    background-color: #a0aec0 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Базовые стили для кнопок */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background-color: #4299e1;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #3182ce;
+}
+
+.btn-secondary {
+    background-color: #a0aec0;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #718096;
+}
+
+.btn-danger {
+    background-color: #f56565;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #e53e3e;
+}
+
+.btn-success {
+    background-color: #38a169;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #2f855a;
+}

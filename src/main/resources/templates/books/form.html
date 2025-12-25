@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${book.bookId == null} ? 'Добавить книгу' : 'Изменить книгу'">Форма книги</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-header h1 {
+            color: #2c5282;
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+
+        .form-header p {
+            color: #718096;
+            margin: 0;
+        }
+
+        .form-card {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus {
+            border-color: #4299e1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        .form-group input.error {
+            border-color: #f56565;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3182ce;
+        }
+
+        .btn-secondary {
+            background-color: #a0aec0;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #718096;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Стили для информации о валидации */
+        .validation-info {
+            background: #feebc8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dd6b20;
+        }
+
+        .validation-info p {
+            margin: 5px 0;
+            color: #c05621;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #c53030;
+            border: 1px solid #fc8181;
+        }
+
+        .alert-dismissible .btn-close {
+            position: relative;
+            top: -5px;
+            right: -25px;
+            color: inherit;
+            background: transparent;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">×</button>
+    </div>
+
+    <div class="form-header">
+        <h1 th:text="${book.bookId == null} ? ' Добавить новую книгу' : ' Изменить книгу'"></h1>
+        <p th:text="${book.bookId == null} ? 'Заполните информацию о новой книге' : 'Измените информацию о книге'"></p>
+    </div>
+
+    <div class="validation-info">
+        <p><strong>Требования к данным:</strong></p>
+        <p>• Инвентарный номер должен быть уникальным</p>
+        <p>• Год издания не может быть меньше 1500</p>
+        <p>• Все поля обязательны для заполнения</p>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{/books/save}" th:object="${book}" method="post" id="bookForm">
+            <input type="hidden" th:field="*{bookId}">
+
+            <div class="form-group">
+                <label for="bookNumber">Инвентарный номер *</label>
+                <input type="text" id="bookNumber" th:field="*{bookNumber}"
+                       th:classappend="${#fields.hasErrors('bookNumber')} ? 'error' : ''"
+                       placeholder="Например: B001" required>
+                <span th:if="${#fields.hasErrors('bookNumber')}"
+                      class="error-message" th:errors="*{bookNumber}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Название книги *</label>
+                <input type="text" id="title" th:field="*{title}"
+                       th:classappend="${#fields.hasErrors('title')} ? 'error' : ''"
+                       placeholder="Например: Мастер и Маргарита" required>
+                <span th:if="${#fields.hasErrors('title')}"
+                      class="error-message" th:errors="*{title}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="author">Автор *</label>
+                <input type="text" id="author" th:field="*{author}"
+                       th:classappend="${#fields.hasErrors('author')} ? 'error' : ''"
+                       placeholder="Например: Михаил Булгаков" required>
+                <span th:if="${#fields.hasErrors('author')}"
+                      class="error-message" th:errors="*{author}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="publicationYear">Год издания *</label>
+                <input type="number" id="publicationYear" th:field="*{publicationYear}"
+                       th:classappend="${#fields.hasErrors('publicationYear')} ? 'error' : ''"
+                       placeholder="Например: 1966" min="1500"
+                       th:attr="max=${#dates.year(#dates.createNow())}" required>
+                <span th:if="${#fields.hasErrors('publicationYear')}"
+                      class="error-message" th:errors="*{publicationYear}"></span>
+            </div>
+
+            <div class="form-actions">
+                <a th:href="@{/books}" class="btn btn-secondary">Отмена</a>
+                <button type="submit" class="btn btn-primary">
+                    <span th:text="${book.bookId == null} ? 'Добавить книгу' : 'Сохранить изменения'"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <a th:href="@{/}" class="back-link">← На главную</a>
+</div>
+
+<script>
+    document.getElementById('bookForm').addEventListener('submit', function(e) {
+        const bookNumber = document.getElementById('bookNumber').value.trim();
+        const title = document.getElementById('title').value.trim();
+        const author = document.getElementById('author').value.trim();
+        const publicationYear = document.getElementById('publicationYear').value;
+
+        let errors = [];
+
+        if (!bookNumber) {
+            errors.push('Инвентарный номер обязателен');
+        }
+
+        if (!title) {
+            errors.push('Название книги обязательно');
+        }
+
+        if (!author) {
+            errors.push('Автор обязателен');
+        }
+
+        if (!publicationYear) {
+            errors.push('Год издания обязателен');
+        } else if (parseInt(publicationYear) < 1500) {
+            errors.push('Год издания должен быть не менее 1500');
+        } else if (parseInt(publicationYear) > new Date().getFullYear()) {
+            errors.push('Год издания не может быть больше текущего года');
+        }
+
+        if (errors.length > 0) {
+            e.preventDefault();
+            alert('Ошибки в форме:\n\n' + errors.join('\n'));
+        }
+    });
+</script>
+</body>
+</html>
